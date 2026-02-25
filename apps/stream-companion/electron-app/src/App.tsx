@@ -4,6 +4,7 @@ import Settings from './Settings';
 import StatusBar from './StatusBar';
 import LogViewer from './LogViewer';
 import Filters from './Filters';
+import Overlay from './Overlay';
 
 // Electronの型定義
 declare global {
@@ -50,6 +51,23 @@ interface HealthStatus {
 }
 
 function App() {
+  // === ルーティング処理 ===
+  // URLに ?mode=overlay があれば、オーバーレイ（透過字幕）画面のみを表示する
+  const queryParams = new URLSearchParams(window.location.search);
+  const isOverlayMode = queryParams.get('mode') === 'overlay';
+
+  // 透過用のCSSクラスをbodyに追加
+  useEffect(() => {
+    if (isOverlayMode) {
+      document.body.classList.add('overlay-mode');
+      return () => document.body.classList.remove('overlay-mode');
+    }
+  }, [isOverlayMode]);
+
+  if (isOverlayMode) {
+    return <Overlay />;
+  }
+
   const [activeTab, setActiveTab] = useState<TabType>('test');
   const [inputText, setInputText] = useState("");
   const [inputUsername, setInputUsername] = useState("Guest");

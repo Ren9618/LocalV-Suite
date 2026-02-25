@@ -154,6 +154,20 @@ function StatusBar({ health }: StatusBarProps) {
                     </button>
                 )}
 
+                {/* OBSオーバーレイURLコピーボタン */}
+                <button
+                    className="status-help-btn overlay-copy-btn"
+                    onClick={() => {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('mode', 'overlay');
+                        navigator.clipboard.writeText(url.toString());
+                        alert('OBSブラウザソース用のURLをコピーしました！\n\n' + url.toString());
+                    }}
+                    title="OBSのブラウザソースに設定するURLをコピーします"
+                >
+                    🔗 OBS用URLをコピー
+                </button>
+
                 {/* 寄付リンク */}
                 <a
                     className="donate-link"

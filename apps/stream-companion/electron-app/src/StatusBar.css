@@ -222,3 +222,15 @@
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.82rem;
 }
+
+/* === オーバーレイURLコピーボタン === */
+.overlay-copy-btn {
+    background: rgba(138, 43, 226, 0.15);
+    /* 紫系のアクセント */
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    color: #ce93d8;
+}
+
+.overlay-copy-btn:hover {
+    background: rgba(138, 43, 226, 0.3);
+}
