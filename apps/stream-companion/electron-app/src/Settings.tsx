@@ -495,6 +495,92 @@ function Settings({ health, onUnsavedChanges }: SettingsProps) {
                             />
                         </div>
 
+                        <h3 style={{ marginTop: '24px', marginBottom: '12px', color: '#FFD700', borderBottom: '1px solid #333', paddingBottom: '8px', fontSize: '1rem' }}>💰 スーパーチャット / ビッツ専用スタイル</h3>
+
+                        <div className="settings-field">
+                            <label>ボックス背景色 1 (左上)</label>
+                            <input
+                                type="text"
+                                value={overlaySettings.scBoxBg1}
+                                onChange={(e) => setOverlaySettings({ ...overlaySettings, scBoxBg1: e.target.value })}
+                                placeholder="rgba(255, 215, 0, 0.25)"
+                            />
+                        </div>
+
+                        <div className="settings-field">
+                            <label>ボックス背景色 2 (右下)</label>
+                            <input
+                                type="text"
+                                value={overlaySettings.scBoxBg2}
+                                onChange={(e) => setOverlaySettings({ ...overlaySettings, scBoxBg2: e.target.value })}
+                                placeholder="rgba(255, 140, 0, 0.2)"
+                            />
+                        </div>
+
+                        <div className="settings-field">
+                            <label>ライン色</label>
+                            <div className="overlay-color-row">
+                                <input
+                                    type="color"
+                                    value={overlaySettings.scBorderColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scBorderColor: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    value={overlaySettings.scBorderColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scBorderColor: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="settings-field">
+                            <label>「Super Chat」ラベル色</label>
+                            <div className="overlay-color-row">
+                                <input
+                                    type="color"
+                                    value={overlaySettings.scLabelColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scLabelColor: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    value={overlaySettings.scLabelColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scLabelColor: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="settings-field">
+                            <label>ユーザーコメント 文字色</label>
+                            <div className="overlay-color-row">
+                                <input
+                                    type="color"
+                                    value={overlaySettings.scUserColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scUserColor: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    value={overlaySettings.scUserColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scUserColor: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="settings-field">
+                            <label>AI返答 文字色</label>
+                            <div className="overlay-color-row">
+                                <input
+                                    type="color"
+                                    value={overlaySettings.scReplyColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scReplyColor: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    value={overlaySettings.scReplyColor}
+                                    onChange={(e) => setOverlaySettings({ ...overlaySettings, scReplyColor: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
                         <button
                             className="save-btn"
                             onClick={async () => {

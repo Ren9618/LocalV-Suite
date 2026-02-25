@@ -98,6 +98,12 @@ const defaultOverlaySettings = {
   animationDuration: '0.3s',
   fadeDuration: '1s',
   displayDuration: 30000,
+  scBoxBg1: 'rgba(255, 215, 0, 0.25)',
+  scBoxBg2: 'rgba(255, 140, 0, 0.2)',
+  scBorderColor: '#FFD700',
+  scLabelColor: '#FFD700',
+  scUserColor: '#FFD700',
+  scReplyColor: '#FFF8DC',
 };
 
 type OverlaySettings = typeof defaultOverlaySettings;
@@ -121,10 +127,10 @@ function saveOverlaySettings(s: OverlaySettings) {
 function startOverlayServer() {
   const overlayHtmlPath = path.join(app.getPath('userData'), 'overlay.html');
 
-  // v4: /settings エンドポイントから設定を取得して適用する方式
-  if (!fs.existsSync(overlayHtmlPath) || !fs.readFileSync(overlayHtmlPath, 'utf-8').includes('overlay-v5')) {
+  // v6: スパチャ用のカラー変数を追加
+  if (!fs.existsSync(overlayHtmlPath) || !fs.readFileSync(overlayHtmlPath, 'utf-8').includes('overlay-v6')) {
     const defaultHtml = `<!DOCTYPE html>
-<!-- overlay-v5 -->
+<!-- overlay-v6 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -162,9 +168,9 @@ function startOverlayServer() {
 
     /* === スーパーチャット / ビッツ専用スタイル === */
     .superchat-box {
-      background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.2)) !important;
-      border-left: 6px solid #FFD700 !important;
-      box-shadow: 0 0 20px rgba(255,215,0,0.4), 0 4px 15px rgba(0,0,0,0.5) !important;
+      background: linear-gradient(135deg, var(--sc-box-bg1), var(--sc-box-bg2)) !important;
+      border-left: 6px solid var(--sc-border-color) !important;
+      box-shadow: 0 0 20px var(--sc-box-bg1), 0 4px 15px rgba(0,0,0,0.5) !important;
       position: relative;
       padding-top: 28px;
     }
@@ -175,16 +181,16 @@ function startOverlayServer() {
       left: 20px;
       font-size: 0.7rem;
       font-weight: bold;
-      color: #FFD700;
+      color: var(--sc-label-color);
       letter-spacing: 1px;
       text-transform: uppercase;
     }
     .superchat-box .user {
-      color: #FFD700 !important;
+      color: var(--sc-user-color) !important;
       font-weight: bold;
     }
     .superchat-box .reply {
-      color: #FFF8DC !important;
+      color: var(--sc-reply-color) !important;
     }
 
     /* スパチャ専用アニメーション */
@@ -243,6 +249,14 @@ function startOverlayServer() {
       root.setProperty('--reply-font-weight', s.replyFontWeight);
       root.setProperty('--fade-duration', s.fadeDuration);
       root.setProperty('--anim-dur', s.animationDuration);
+      
+      root.setProperty('--sc-box-bg1', s.scBoxBg1 || 'rgba(255, 215, 0, 0.25)');
+      root.setProperty('--sc-box-bg2', s.scBoxBg2 || 'rgba(255, 140, 0, 0.2)');
+      root.setProperty('--sc-border-color', s.scBorderColor || '#FFD700');
+      root.setProperty('--sc-label-color', s.scLabelColor || '#FFD700');
+      root.setProperty('--sc-user-color', s.scUserColor || '#FFD700');
+      root.setProperty('--sc-reply-color', s.scReplyColor || '#FFF8DC');
+
       DISPLAY_DURATION = s.displayDuration || 30000;
       SUPERCHAT_DISPLAY_DURATION = (s.displayDuration || 30000) * 2; // スパチャは通常の2倍
       ANIM_TYPE = s.animationType || 'slideUp';
