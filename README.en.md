@@ -57,7 +57,7 @@ npm run dev
 1. In the app's "Settings" > "Audio Settings", select your output device (e.g., "CABLE Input").
 2. In OBS, add an "Audio Input Capture" and select "CABLE Output".
 
-### 📺 Video (Subtitle) Integration
+### 📺 Comment Integration
 1. Click "🔗 Copy URL for OBS" at the bottom right of the app and use the copied URL (`http://localhost:25252/`).
 2. Add a "Browser Source" in OBS and paste the URL.
 3. Open "OBS Overlay Settings" from the app's "Settings" tab to visually customize font size, colors, background, and animation effects while previewing them.
