@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import http from 'http';
 import { createBrain, type AiBrainProvider } from './core/brain';
 import { VoiceVoxClient } from './core/voice';
 import { SettingsStore } from './core/settings-store';
@@ -62,12 +64,180 @@ interface LogEntry {
 let logs: LogEntry[] = [];
 let logIdCounter = 0;
 
+const sseClients: http.ServerResponse[] = [];
+
 // ログエントリをレンダラーに通知する
 function pushLogEntry(entry: LogEntry) {
   logs.push(entry);
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('log-entry', entry);
   }
+
+  // SSEクライアント（OBSブラウザ等）にも送信
+  const dataString = JSON.stringify(entry);
+  sseClients.forEach(client => {
+    client.write(`data: ${dataString}\n\n`);
+  });
+}
+
+// === オーバーレイ用ローカルサーバー ===
+function startOverlayServer() {
+  const overlayHtmlPath = path.join(app.getPath('userData'), 'overlay.html');
+
+  if (!fs.existsSync(overlayHtmlPath)) {
+    const defaultHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Stream Companion Overlay</title>
+  <style>
+    /* 🎨 このHTMLファイルを編集することで、OBS上の見栄えを自由に変更できます！ */
+    body {
+      background-color: transparent !important; /* OBSで背景を透明にするための設定 */
+      color: white;
+      margin: 0;
+      padding: 20px;
+      overflow: hidden; /* スクロールバーは表示しない */
+      font-family: 'Noto Sans JP', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end; /* 画面下部に表示する */
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .message-box {
+      /* AIの返答ボックスのスタイル */
+      background: rgba(0, 0, 0, 0.65); /* 半透明の黒背景 */
+      padding: 15px 25px;
+      border-radius: 12px;           /* 丸角 */
+      display: inline-block;
+      max-width: 80%;
+      border-left: 6px solid #4CAF50; /* 左端の緑色の線 */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      opacity: 1;
+      transition: opacity 1s ease-in-out; /* 1秒かけてフェード効果 */
+      margin-bottom: 20px;
+    }
+
+    .fade-out {
+      opacity: 0; /* 完全に透明に */
+    }
+
+    .user {
+      /* ユーザーコメント（上の行）のスタイル */
+      font-size: 1.1rem;
+      color: #ddd;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .reply {
+      /* AI返答（メイン）のスタイル */
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.4;
+      /* 見やすいように文字に黒い縁取り（アウトライン）を追加 */
+      text-shadow: 
+        -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000,
+        0px 3px 5px rgba(0,0,0,0.8); /* 影 */
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    const container = document.getElementById('container');
+
+    // サーバーにリアルタイム接続
+    function connect() {
+      const source = new EventSource('/sse');
+      
+      source.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.status === 'connected') return;
+        if (data.source === 'error') return; // エラーは表示しない
+
+        // 過去のメッセージがあったら削除して新しく作る
+        container.innerHTML = '';
+
+        const box = document.createElement('div');
+        box.className = 'message-box';
+        
+        const userDiv = document.createElement('div');
+        userDiv.className = 'user';
+        userDiv.textContent = data.userComment;
+
+        const replyDiv = document.createElement('div');
+        replyDiv.className = 'reply';
+        replyDiv.textContent = data.aiReply;
+
+        box.appendChild(userDiv);
+        box.appendChild(replyDiv);
+        container.appendChild(box);
+
+        // 10秒表示したあと、フェードアウトして消す
+        setTimeout(() => {
+          box.classList.add('fade-out');
+          setTimeout(() => box.remove(), 1000);
+        }, 10000);
+      };
+
+      source.onerror = (err) => {
+        console.error('SSE Error:', err);
+        source.close();
+        // エラーで切断されたら3秒後に再接続する
+        setTimeout(connect, 3000);
+      };
+    }
+
+    connect();
+  </script>
+</body>
+</html>`;
+    fs.writeFileSync(overlayHtmlPath, defaultHtml, 'utf-8');
+  }
+
+  const server = http.createServer((req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); // OBSなどでも開けるように
+
+    if (req.url === '/') {
+      // ユーザーデータ領域にあるHTMLファイルを読み込んで返す
+      fs.readFile(overlayHtmlPath, (err, data) => {
+        if (err) {
+          res.writeHead(500);
+          res.end('Error loading overlay.html');
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(data);
+      });
+    } else if (req.url === '/sse') {
+      // ログリアルタイム配信用のSSEエンドポイント
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+      });
+      res.write('data: {"status":"connected"}\\n\\n'); // 初期接続確認
+      sseClients.push(res);
+      req.on('close', () => {
+        const index = sseClients.indexOf(res);
+        if (index !== -1) sseClients.splice(index, 1);
+      });
+    } else {
+      res.writeHead(404);
+      res.end('Not found');
+    }
+  });
+
+  server.listen(25252, '127.0.0.1', () => {
+    console.log('[Main] Overlay HTTP server listening on http://127.0.0.1:25252');
+  }).on('error', (err) => {
+    console.error('[Main] Overlay server error:', err);
+  });
 }
 
 function createWindow() {
@@ -96,6 +266,7 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   createWindow();
+  startOverlayServer();
 
   // ヘルスチェックの定期監視を開始（10秒間隔）
   healthChecker.startMonitoring((status) => {

@@ -158,10 +158,9 @@ function StatusBar({ health }: StatusBarProps) {
                 <button
                     className="status-help-btn overlay-copy-btn"
                     onClick={() => {
-                        const url = new URL(window.location.href);
-                        url.searchParams.set('mode', 'overlay');
-                        navigator.clipboard.writeText(url.toString());
-                        alert('OBSブラウザソース用のURLをコピーしました！\n\n' + url.toString());
+                        const url = 'http://localhost:25252/';
+                        navigator.clipboard.writeText(url);
+                        alert('OBSブラウザソース用のURLをコピーしました！\n\n' + url + '\n\n※ カスタマイズ用HTMLはアプリの保存データフォルダ(userData)内の\n「overlay.html」を直接編集できます。');
                     }}
                     title="OBSのブラウザソースに設定するURLをコピーします"
                 >
