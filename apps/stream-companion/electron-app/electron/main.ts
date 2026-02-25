@@ -60,6 +60,7 @@ interface LogEntry {
   aiReply: string;
   source: 'ai' | 'filter' | 'error';
   processingMs: number;
+  isSuperChat?: boolean;
 }
 let logs: LogEntry[] = [];
 let logIdCounter = 0;
@@ -121,9 +122,9 @@ function startOverlayServer() {
   const overlayHtmlPath = path.join(app.getPath('userData'), 'overlay.html');
 
   // v4: /settings エンドポイントから設定を取得して適用する方式
-  if (!fs.existsSync(overlayHtmlPath) || !fs.readFileSync(overlayHtmlPath, 'utf-8').includes('overlay-v4')) {
+  if (!fs.existsSync(overlayHtmlPath) || !fs.readFileSync(overlayHtmlPath, 'utf-8').includes('overlay-v5')) {
     const defaultHtml = `<!DOCTYPE html>
-<!-- overlay-v4 -->
+<!-- overlay-v5 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -158,6 +159,44 @@ function startOverlayServer() {
       transition: opacity var(--fade-duration) ease-in-out;
       margin-bottom: 8px;
     }
+
+    /* === スーパーチャット / ビッツ専用スタイル === */
+    .superchat-box {
+      background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.2)) !important;
+      border-left: 6px solid #FFD700 !important;
+      box-shadow: 0 0 20px rgba(255,215,0,0.4), 0 4px 15px rgba(0,0,0,0.5) !important;
+      position: relative;
+      padding-top: 28px;
+    }
+    .superchat-box::before {
+      content: '\uD83D\uDCB0 Super Chat';
+      position: absolute;
+      top: 6px;
+      left: 20px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #FFD700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .superchat-box .user {
+      color: #FFD700 !important;
+      font-weight: bold;
+    }
+    .superchat-box .reply {
+      color: #FFF8DC !important;
+    }
+
+    /* スパチャ専用アニメーション */
+    .anim-superchat {
+      animation: superchatIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes superchatIn {
+      0%   { transform: scale(0.3) translateY(50px); opacity: 0; }
+      60%  { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
     .anim-slideUp    { animation: slideUp    var(--anim-dur) ease-out; }
     .anim-slideDown  { animation: slideDown  var(--anim-dur) ease-out; }
     .anim-slideLeft  { animation: slideLeft  var(--anim-dur) ease-out; }
@@ -188,9 +227,9 @@ function startOverlayServer() {
   <script>
     const container = document.getElementById('container');
     let DISPLAY_DURATION = 30000;
+    let SUPERCHAT_DISPLAY_DURATION = 60000; // スパチャは長めに表示
     let ANIM_TYPE = 'slideUp';
 
-    // 起動時にサーバーから設定を取得してCSS変数に適用
     fetch('/settings').then(r => r.json()).then(s => {
       const root = document.documentElement.style;
       root.setProperty('--box-bg', s.boxBg);
@@ -205,6 +244,7 @@ function startOverlayServer() {
       root.setProperty('--fade-duration', s.fadeDuration);
       root.setProperty('--anim-dur', s.animationDuration);
       DISPLAY_DURATION = s.displayDuration || 30000;
+      SUPERCHAT_DISPLAY_DURATION = (s.displayDuration || 30000) * 2; // スパチャは通常の2倍
       ANIM_TYPE = s.animationType || 'slideUp';
     }).catch(() => {});
 
@@ -221,14 +261,24 @@ function startOverlayServer() {
         const data = JSON.parse(event.data);
         if (data.status === 'connected') return;
         if (data.source === 'error') return;
+
+        const isSC = data.isSuperChat === true;
         const box = document.createElement('div');
-        box.className = 'message-box anim-' + ANIM_TYPE;
+
+        if (isSC) {
+          box.className = 'message-box superchat-box anim-superchat';
+        } else {
+          box.className = 'message-box anim-' + ANIM_TYPE;
+        }
+
         const u = document.createElement('div'); u.className = 'user'; u.textContent = data.userComment;
         const r = document.createElement('div'); r.className = 'reply'; r.textContent = data.aiReply;
         box.appendChild(u); box.appendChild(r);
         container.appendChild(box);
         trimOverflow();
-        setTimeout(() => { box.classList.add('fade-out'); setTimeout(() => box.remove(), 1000); }, DISPLAY_DURATION);
+
+        const duration = isSC ? SUPERCHAT_DISPLAY_DURATION : DISPLAY_DURATION;
+        setTimeout(() => { box.classList.add('fade-out'); setTimeout(() => box.remove(), 1000); }, duration);
       };
       source.onerror = () => { source.close(); setTimeout(connect, 3000); };
     }
@@ -361,6 +411,7 @@ ipcMain.handle('send-comment', async (_event, text: string, isSuperChat: boolean
       aiReply: `[無視] ${filterResult.filterType}`,
       source: 'filter',
       processingMs: Date.now() - startTime,
+      isSuperChat,
     });
     return { reply: null, audioData: null, filtered: true, filterType: filterResult.filterType };
   }
@@ -384,6 +435,7 @@ ipcMain.handle('send-comment', async (_event, text: string, isSuperChat: boolean
       aiReply: reply,
       source: 'filter',
       processingMs,
+      isSuperChat,
     });
 
     return { reply, audioData, filtered: true, filterType: filterResult.filterType };
@@ -422,6 +474,7 @@ ipcMain.handle('send-comment', async (_event, text: string, isSuperChat: boolean
       aiReply: reply,
       source: 'ai',
       processingMs,
+      isSuperChat,
     });
 
     return { reply, audioData, filtered: false };
@@ -436,6 +489,7 @@ ipcMain.handle('send-comment', async (_event, text: string, isSuperChat: boolean
       aiReply: `エラー: ${error}`,
       source: 'error',
       processingMs,
+      isSuperChat,
     });
 
     throw error;
