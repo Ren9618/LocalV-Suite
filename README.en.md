@@ -22,7 +22,10 @@ Currently, it features **"Stream Companion"**, an AI mascot that humorously and 
     *   **Skip Hiding:** AI thinking logs prefixed with `[Skip]` or `[Ignore]` are automatically hidden from the screen.
     *   **Customizable Design:** Intuitively change border colors, font sizes, animation speeds, etc., from the in-app settings screen.
 *   **🎧 Audio Output Routing:** Route audio to a virtual audio device (e.g., VB-Cable) to capture it separately in OBS.
-*   **🧹 Automatic Memory Release:** Includes a memory management feature that automatically unloads the Ollama LLM model from VRAM when the app is closed.
+*   **✨ New Features & Management:**
+    *   **Voiceger Integration:** Integrated "Voiceger" as a new TTS engine. Implemented automatic resource management (VRAM release) and fallback processing during failures via settings switching.
+    *   **Debug Log UI:** Visualize app behavior. Turning on the "Debug Log" toggle from the UI allows real-time viewing of troubleshooting info like AI warmup and error states.
+    *   **🧹 Automatic Memory Release:** Includes an automatic memory management feature that unloads Ollama LLM models and TTS processes from VRAM on app exit or settings change.
 
 ## 🏗️ Architecture
 
