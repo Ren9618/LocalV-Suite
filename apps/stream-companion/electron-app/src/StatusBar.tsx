@@ -213,7 +213,7 @@ function StatusBar({ health }: StatusBarProps) {
                                             >
                                                 {voicegerInstalled ? t('guide.voicegerReinstall') : t('guide.voicegerInstall')}
                                             </button>
-                                            <a href="https://github.com/Ren9618/Voiceger" target="_blank" rel="noreferrer" style={{ fontSize: '0.9em' }}>
+                                            <a href="https://github.com/zunzun999/voiceger_v2/tree/main/example" target="_blank" rel="noreferrer" style={{ fontSize: '0.9em' }}>
                                                 {t('guide.manualSetup')} (GitHub)
                                             </a>
                                         </div>
