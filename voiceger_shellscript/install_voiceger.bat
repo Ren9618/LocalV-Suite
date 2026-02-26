@@ -1,4 +1,5 @@
-@echo off
+﻿@echo off
+chcp 65001 >nul
 setlocal enabledelayedexpansion
 
 REM =============================================================================
@@ -28,19 +29,39 @@ echo Starting Voiceger Installation for Windows...
 set "TARGET_DIR=%~dp0..\"
 cd /d "%TARGET_DIR%"
 
-:: 依存ツールの確認
-where git >nul 2>0
-if %errorlevel% neq 0 (
-    echo Error: Git is not installed. Please install Git first.
-    pause
-    exit /b 1
+:: 依存ツールの確認と自動インストール (winget使用)
+set "PREREQ_INSTALLED=0"
+
+where git >nul 2>&1
+if !errorlevel! neq 0 (
+    echo Git がインストールされていません。wingetを使用して自動インストールを試みます...
+    winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
+    set "PREREQ_INSTALLED=1"
 )
 
-where python >nul 2>0
-if %errorlevel% neq 0 (
-    echo Error: Python is not installed. Please install Python 3.10 first.
+where python >nul 2>&1
+if !errorlevel! neq 0 (
+    echo Python がインストールされていません。wingetを使用してPython 3.12の自動インストールを試みます...
+    winget install --id Python.Python.3.12 -e --source winget --accept-package-agreements --accept-source-agreements
+    set "PREREQ_INSTALLED=1"
+)
+
+where git-lfs >nul 2>&1
+if !errorlevel! neq 0 (
+    echo Git LFS がインストールされていません。wingetを使用して自動インストールを試みます...
+    winget install --id GitHub.GitLFS -e --source winget --accept-package-agreements --accept-source-agreements
+    set "PREREQ_INSTALLED=1"
+)
+
+if "!PREREQ_INSTALLED!"=="1" (
+    echo.
+    echo ======================================================================
+    echo 必要な依存ツール^(Python / Git / Git LFS等^)の自動インストールを行いました。
+    echo これらをシステムに認識させるため、一度このウィンドウを閉じ、
+    echo 新しいターミナルを開いてから再度実行してください。
+    echo ======================================================================
     pause
-    exit /b 1
+    exit /b 0
 )
 
 :: 引数の解析
@@ -67,13 +88,7 @@ if "%ACTION%"=="uninstall" (
     exit /b 0
 )
 
-:: Git LFSの確認（モデルダウンロードに必須）
-where git-lfs >nul 2>0
-if %errorlevel% neq 0 (
-    echo Error: Git LFS (Large File Storage) is not installed. Please install git-lfs first.
-    pause
-    exit /b 1
-)
+:: Git LFSの有効化（モデルダウンロードに必須）
 git lfs install
 
 :: 再インストール確認
@@ -104,7 +119,7 @@ if exist "voiceger_v2" (
 if not exist "voiceger_v2" (
     echo Cloning voiceger_v2...
     git clone https://github.com/zunzun999/voiceger_v2.git
-    if %errorlevel% neq 0 (
+    if !errorlevel! neq 0 (
         echo Error: Failed to clone repository.
         pause
         exit /b 1
@@ -115,7 +130,7 @@ cd voiceger_v2
 
 echo Creating python venv...
 python -m venv venv
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo Error: Failed to create venv.
     pause
     exit /b 1
@@ -123,20 +138,39 @@ if %errorlevel% neq 0 (
 
 call venv\Scripts\activate.bat
 
-echo Downgrading setuptools to ^<70 for compatibility with older packages...
-pip install "setuptools<70.0.0" wheel
+echo Patching requirements.txt for Windows compatibility (including Python 3.12 support)...
+python -c "import os, re; req='requirements.txt'; prob={'llvmlite':'','numba':'','numpy':'<2.0.0','av':'','mkl-service':'','mkl_fft':'','mkl_random':'','starlette':'>=0.40.0','huggingface-hub':'>=0.33.5','fastapi':'>=0.115.2'}; f=lambda l: l if not l.strip() or l.startswith('#') else None if 'LangSegment' in l or 'fairseq' in l else re.split(r'[=<>!~\[@ ]', l.strip())[0].strip() + prob[re.split(r'[=<>!~\[@ ]', l.strip())[0].strip()] if re.split(r'[=<>!~\[@ ]', l.strip())[0].strip() in prob else l; os.path.exists(req) and open(req,'w',encoding='utf-8').write('\n'.join([x for x in (f(l) for l in open(req,'r',encoding='utf-8').read().split('\n')) if x is not None]))"
 
-echo Installing requirements...
-pip install -r requirements.txt
+echo Patching voiceger_api.py for cross-platform support and FFmpeg error fix...
+python -c "import os; a='example/voiceger_api.py'; d=open(a,'r',encoding='utf-8').read() if os.path.exists(a) else ''; os.path.exists(a) and '@app.get(\"/speakers\")' not in d and open(a,'w',encoding='utf-8').write(d.replace('    \"endpoints\": [\"/tts\", \"/vc/single\"]\n    }', '    \"endpoints\": [\"/tts\", \"/vc/single\", \"/speakers\"]\n    }').replace('if os.path.exists(os.path.join(ffmpeg_dir, \"ffmpeg.exe\")):', 'if os.name != \"nt\":\\n    pass\\nelif os.path.exists(os.path.join(ffmpeg_dir, \"ffmpeg.exe\")):').replace('@app.post(\"/tts\")', '\\n@app.get(\"/speakers\")\\ndef get_speakers():\\n    return {\"speakers\": [{\"id\": f, \"name\": f.replace(\".wav\", \"\")} for f in os.listdir(REFERENCE_DIR) if f.endswith(\".wav\")] if os.path.exists(REFERENCE_DIR) and [f for f in os.listdir(REFERENCE_DIR) if f.endswith(\".wav\")] else [{\"id\": \"default\", \"name\": \"Default Speaker\"}]}\\n\\n@app.post(\"/tts\")').replace('else:\\n    raise FileNotFoundError(f\"FFmpeg directory not found: {ffmpeg_dir}\")', 'else:\\n    import shutil\\n    if shutil.which(\"ffmpeg\"):\\n        print(f\"✓ FFmpeg found in system PATH\")\\n    else:\\n        print(f\"⚠ Warning: FFmpeg not found. Some features may not work. Please install FFmpeg and add it to PATH.\")'))"
+
+echo Installing build tools...
+python -m pip install "pip<24.1"
+python -m pip install "setuptools==69.5.1" wheel Cython "numpy<2.0.0"
+
+echo Installing legacy dependencies (openai-whisper, eunjeon, LangSegment)...
+python -m pip install --no-build-isolation openai-whisper==20240930 eunjeon==0.4.0 ./LangSegment-0.3.5
+
+echo Upgrading build tools...
+python -m pip install --upgrade setuptools
+
+echo Installing remaining requirements...
+python -m pip install -r requirements.txt
+
+echo Reverting setuptools to ^< 70.0.0 to fix pkg_resources error...
+python -m pip install "setuptools<70.0.0"
+
+echo Installing fairseq forcibly without dependencies...
+python -m pip install fairseq==0.12.2 --no-deps
 
 :: GPU環境の自動判別と適切な PyTorch のインストール
-where nvidia-smi >nul 2>0
-if %errorlevel% equ 0 (
+where nvidia-smi >nul 2>&1
+if !errorlevel! equ 0 (
     echo NVIDIA GPU detected. Installing PyTorch with CUDA 12.1 support...
-    pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --extra-index-url https://download.pytorch.org/whl/cu121
+    python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --force-reinstall --no-deps
 ) else (
     echo No NVIDIA GPU detected. Installing PyTorch CPU version...
-    pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --extra-index-url https://download.pytorch.org/whl/cpu
+    python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --force-reinstall --no-deps
 )
 
 echo Downloading GPT-SoVITS pretrained models...

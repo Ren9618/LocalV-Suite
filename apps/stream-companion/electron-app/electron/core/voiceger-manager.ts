@@ -163,11 +163,14 @@ export async function stopVoiceger(baseUrl: string = 'http://127.0.0.1:8000'): P
  * プロジェクトルート(LocalV-StreamLive)の親ディレクトリ(LocalAI)内を確認する
  */
 export function isVoicegerInstalled(): boolean {
-    // getScriptDir() = .../LocalV-StreamLive/voiceger_shellscript
-    // -> 1つ上 = LocalV-StreamLive, さらに1つ上 = LocalAI
     const projectRoot = path.resolve(getScriptDir(), '..');
-    const localAiDir = path.resolve(projectRoot, '..');
-    const installDir = path.join(localAiDir, 'voiceger_v2');
+
+    // Windows は LocalV-StreamLive ディレクトリ内、Mac は 1つ上の階層にインストールされる
+    const isWindows = process.platform === 'win32';
+    const installDir = isWindows
+        ? path.join(projectRoot, 'voiceger_v2')
+        : path.join(path.resolve(projectRoot, '..'), 'voiceger_v2');
+
     console.log(`[VoicegerManager] Checking install at: ${installDir}`);
     return fs.existsSync(installDir);
 }
