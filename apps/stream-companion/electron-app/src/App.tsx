@@ -25,6 +25,7 @@ declare global {
       getWarmupStatus: () => Promise<string>;
       onWarmupStatus: (callback: (status: string) => void) => () => void;
       retryWarmup: () => Promise<void>;
+      startOllama: () => Promise<boolean | string>;
       getFilters: () => Promise<any>;
       saveFilters: (filters: any) => Promise<boolean>;
       // プリセット管理
@@ -95,6 +96,7 @@ function App() {
   const [warmupErrorCode, setWarmupErrorCode] = useState<string | undefined>();
   const [warmupErrorMessage, setWarmupErrorMessage] = useState<string | undefined>();
   const [warmupDismissed, setWarmupDismissed] = useState(false);
+  const [isStartingOllama, setIsStartingOllama] = useState(false);
   const [voicevoxDismissed, setVoicevoxDismissed] = useState(() => {
     return localStorage.getItem('voicevox-notify-dismissed') === 'true';
   });
@@ -168,7 +170,7 @@ function App() {
     setActiveTab(newTab);
   };
 
-  // ヘルスステータスの受信を購読
+  // ヘルスステータスの受信を購読（UIステータス表示専用）
   useEffect(() => {
     window.electron.checkHealth().then(setHealth);
     const cleanup = window.electron.onHealthStatus((status) => {
@@ -262,6 +264,23 @@ function App() {
             )}
             <div className="warmup-subtext">{t('warmup.failedSub')}</div>
             <div className="warmup-actions">
+              {warmupErrorCode === 'LV-1001' && (
+                <button
+                  className="warmup-btn warmup-btn-primary"
+                  disabled={isStartingOllama}
+                  onClick={async () => {
+                    setIsStartingOllama(true);
+                    await window.electron.startOllama();
+                    // 少し待ってからリトライを発火 (Ollamaの起動完了を待つため8秒待機)
+                    setTimeout(() => {
+                      setIsStartingOllama(false);
+                      window.electron.retryWarmup();
+                    }, 8000);
+                  }}
+                >
+                  {isStartingOllama ? t('warmup.startingOllama') : t('warmup.startOllama')}
+                </button>
+              )}
               <button
                 className="warmup-btn warmup-btn-primary"
                 onClick={() => {

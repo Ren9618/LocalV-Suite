@@ -13,6 +13,8 @@ const en: Record<string, string> = {
   'warmup.failed': 'Failed to start AI model',
   'warmup.failedSub': 'Check if the AI service is running, or switch to a cloud LLM',
   'warmup.errorCode': 'Error Code',
+  'warmup.startOllama': '🚀 Start Ollama',
+  'warmup.startingOllama': 'Starting Ollama...',
   'warmup.retry': '🔄 Retry',
   'warmup.openSettings': '⚙️ Open Settings',
   'warmup.skip': 'Continue anyway',

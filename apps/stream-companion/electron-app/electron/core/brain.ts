@@ -35,7 +35,9 @@ export class OllamaBrain implements AiBrainProvider {
           model: this.model,
           messages: [{ role: 'user', content: 'hi' }],
           stream: false
-        })
+        }),
+        // 30秒でタイムアウト（モデルのロードが長すぎる場合に備える）
+        signal: AbortSignal.timeout(30000)
       });
 
       if (!response.ok) {

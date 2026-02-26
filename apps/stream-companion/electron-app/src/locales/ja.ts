@@ -13,6 +13,8 @@ const ja: Record<string, string> = {
   'warmup.failed': 'AIモデルの起動に失敗しました',
   'warmup.failedSub': 'AIサービスが起動しているか確認するか、クラウドLLMに切り替えてください',
   'warmup.errorCode': 'エラーコード',
+  'warmup.startOllama': '🚀 Ollamaを起動',
+  'warmup.startingOllama': 'Ollamaを起動中...',
   'warmup.retry': '🔄 再試行',
   'warmup.openSettings': '⚙️ 設定画面を開く',
   'warmup.skip': 'このまま使う',

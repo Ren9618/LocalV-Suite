@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import http from 'http';
+import { exec } from 'child_process';
 import { createBrain, type AiBrainProvider } from './core/brain';
 import { ErrorCodes } from './core/error-codes';
 import { VoiceVoxClient } from './core/voice';
@@ -10,14 +11,14 @@ import { VoicegerClient, detectLanguage } from './core/voiceger';
 import { startVoiceger, stopVoiceger, isVoicegerInstalled, installVoiceger } from './core/voiceger-manager';
 import { SettingsStore } from './core/settings-store';
 import { HealthChecker } from './core/health-checker';
-
-interface TTSClient {
-  generateAudio(text: string, speakerId?: string | number): Promise<Buffer | null>;
-}
 import { CommentFilter } from './core/comment-filter';
 import { ConversationMemory } from './core/conversation-memory';
 import { ViewerMemory } from './core/viewer-memory';
 import { LiveChat } from 'youtube-chat';
+
+interface TTSClient {
+  generateAudio(text: string, speakerId?: string | number): Promise<Buffer | null>;
+}
 
 // __dirname の代替
 const __filename = fileURLToPath(import.meta.url);
@@ -816,6 +817,8 @@ async function runWarmup() {
     // エラーがVoicegerに起因する場合は独自のコードをセット
     if (error?.message && error.message.includes('Voiceger')) {
       warmupErrorCode = ErrorCodes.VOICEGER_START_FAILED;
+    } else if (currentSettings.aiProvider === 'ollama' && (error?.cause?.code === 'ECONNREFUSED' || String(error).includes('ECONNREFUSED'))) {
+      warmupErrorCode = ErrorCodes.OLLAMA_CONNECTION_REFUSED;
     } else {
       warmupErrorCode = ErrorCodes.WARMUP_FAILED;
     }
@@ -1050,6 +1053,52 @@ ipcMain.handle('retry-warmup', async () => {
     runWarmup();
   }
 });
+
+// === IPC: Ollama手動起動 ===
+ipcMain.handle('start-ollama', async () => {
+  return new Promise((resolve) => {
+    pushDebugLog('[Main] Ollamaの起動を試行中...');
+
+    if (process.platform === 'win32') {
+      // Windowsでは「ollama app.exe」（GUIマネージャー）を起動する。
+      // ollama serve だけでは正しく動作しないため、app.exe 経由で起動する。
+      const ollamaDir = path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Ollama');
+      const ollamaApp = path.join(ollamaDir, 'ollama app.exe');
+
+      // ollama app.exe が存在するか確認
+      const appExists = fs.existsSync(ollamaApp);
+
+      if (appExists) {
+        pushDebugLog(`[Main] Ollama App を起動します: ${ollamaApp}`);
+        exec(`start "" "${ollamaApp}"`, (error: any) => {
+          if (error) {
+            console.error('[Main] Ollama App 起動エラー（無視して続行します）:', error);
+          }
+        });
+      } else {
+        // フォールバック: ollama serve を直接起動
+        pushDebugLog('[Main] ollama app.exe が見つかりません。ollama serve で起動を試みます。');
+        exec('start /B "" "ollama" "serve"', (error: any) => {
+          if (error) {
+            console.error('[Main] Ollama起動コマンドエラー（無視して続行します）:', error);
+          }
+        });
+      }
+    } else {
+      // macOS / Linux
+      exec('ollama serve &', (error: any) => {
+        if (error) {
+          console.error('[Main] Ollama起動コマンドエラー（無視して続行します）:', error);
+        }
+      });
+    }
+
+    // execが標準出力を掴んでハングするのを防ぐため、コールバックを待たずに完了とする
+    pushDebugLog('[Main] Ollama起動コマンドを送信しました');
+    setTimeout(() => resolve(true), 1500);
+  });
+});
+
 
 // === IPC: ヘルスチェック ===
 ipcMain.handle('check-health', async () => {

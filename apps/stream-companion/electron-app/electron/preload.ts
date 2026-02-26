@@ -63,6 +63,11 @@ try {
       return ipcRenderer.invoke('retry-warmup');
     },
 
+    // Ollamaの起動
+    startOllama: () => {
+      return ipcRenderer.invoke('start-ollama');
+    },
+
     // ログエントリのリアルタイム受信
     onLogEntry: (callback: (entry: any) => void) => {
       const handler = (_event: any, entry: any) => callback(entry);

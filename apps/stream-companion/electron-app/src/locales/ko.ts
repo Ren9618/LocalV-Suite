@@ -10,6 +10,8 @@ const ko: Record<string, string> = {
   'warmup.failed': 'AI 모델 시작 실패',
   'warmup.failedSub': 'AI 서비스가 실행 중인지 확인하거나, 클라우드 LLM으로 전환하세요',
   'warmup.errorCode': '에러 코드',
+  'warmup.startOllama': '🚀 Ollama 시작',
+  'warmup.startingOllama': 'Ollama 시작 중...',
   'warmup.retry': '🔄 재시도',
   'warmup.openSettings': '⚙️ 설정 화면 열기',
   'warmup.skip': '그대로 사용',

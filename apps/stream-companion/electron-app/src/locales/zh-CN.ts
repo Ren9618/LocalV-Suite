@@ -10,6 +10,8 @@ const zhCN: Record<string, string> = {
   'warmup.failed': 'AI模型启动失败',
   'warmup.failedSub': '请确认AI服务是否正在运行，或切换到云端 LLM',
   'warmup.errorCode': '错误代码',
+  'warmup.startOllama': '🚀 启动 Ollama',
+  'warmup.startingOllama': '正在启动 Ollama...',
   'warmup.retry': '🔄 重试',
   'warmup.openSettings': '⚙️ 打开设置',
   'warmup.skip': '继续使用',
