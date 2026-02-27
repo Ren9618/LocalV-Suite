@@ -186,7 +186,7 @@ const zhTW: Record<string, string> = {
   'settings.about.author': '開發者',
   'settings.about.license': '授權條款',
   'settings.about.repository': 'GitHub 儲存庫',
-  'settings.about.copyright': '© 2024-2026 LocalV-StreamLive Contributors. All rights reserved.',
+  'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',
   'filter.loading': '正在載入過濾器設定...',
   'filter.save': '💾 儲存過濾器設定',
   'filter.saving': '儲存中...',

@@ -217,7 +217,7 @@ const en: Record<string, string> = {
   'settings.about.author': 'Author',
   'settings.about.license': 'License',
   'settings.about.repository': 'GitHub Repository',
-  'settings.about.copyright': '© 2024-2026 LocalV-StreamLive Contributors. All rights reserved.',
+  'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',
 
   // === Filters ===
   'filter.loading': 'Loading filter settings...',

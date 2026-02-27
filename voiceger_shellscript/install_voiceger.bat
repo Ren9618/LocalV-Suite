@@ -25,7 +25,7 @@ REM ============================================================================
 
 echo Starting Voiceger Installation for Windows...
 
-:: 設置場所の決定（LocalV-StreamLiveディレクトリ内）
+:: 設置場所の決定（LocalV-Suiteディレクトリ内）
 set "TARGET_DIR=%~dp0..\"
 cd /d "%TARGET_DIR%"
 

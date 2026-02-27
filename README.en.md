@@ -1,8 +1,8 @@
-# LocalV-StreamLive 🤖🎙️
+# LocalV-Suite 🤖🎙️
 
 🌍 Read this in other languages: [日本語](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [한국어](README.ko.md)
 
-LocalV-StreamLive is a privacy-focused, entirely offline AI broadcast bot and assistant tool suite designed to run entirely on your PC.
+LocalV-Suite is a privacy-focused, entirely offline AI broadcast bot and assistant tool suite designed to run entirely on your PC.
 Currently, it features **"Stream Companion"**, an AI mascot that automatically responds to and converses with YouTube Live stream comments.
 
 ## ✨ Features
@@ -61,8 +61,8 @@ Currently, it features **"Stream Companion"**, an AI mascot that automatically r
 
 ### 2. Setup
 ```bash
-git clone https://github.com/Ren9618/LocalV-StreamLive.git
-cd LocalV-StreamLive/apps/stream-companion/electron-app
+git clone https://github.com/Ren9618/LocalV-Suite.git
+cd LocalV-Suite/apps/stream-companion/electron-app
 npm install
 ```
 

@@ -1,7 +1,7 @@
 {
   "name": "local-v-streamlive",
   "version": "1.0.0",
-  "description": "Monorepo for LocalV-StreamLive",
+  "description": "Monorepo for LocalV-Suite",
   "scripts": {
     "test:core": "ts-node scripts/test-brain.ts",
     "test:bot": "ts-node apps/stream-companion/bot.ts"

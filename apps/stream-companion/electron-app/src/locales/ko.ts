@@ -186,7 +186,7 @@ const ko: Record<string, string> = {
   'settings.about.author': '개발자',
   'settings.about.license': '라이선스',
   'settings.about.repository': 'GitHub 저장소',
-  'settings.about.copyright': '© 2024-2026 LocalV-StreamLive Contributors. All rights reserved.',
+  'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',
   'filter.loading': '필터 설정 로딩 중...',
   'filter.save': '💾 필터 설정 저장',
   'filter.saving': '저장 중...',

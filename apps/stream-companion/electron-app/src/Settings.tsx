@@ -1021,7 +1021,7 @@ function Settings({ health, onUnsavedChanges }: SettingsProps) {
                                     <div style={{ fontSize: '48px' }}>🚀</div>
                                     <div>
                                         <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Stream Companion</h3>
-                                        <p style={{ margin: '4px 0 0 0', color: '#aaa', fontSize: '0.9rem' }}>LocalV-StreamLive Project</p>
+                                        <p style={{ margin: '4px 0 0 0', color: '#aaa', fontSize: '0.9rem' }}>LocalV-Suite Project</p>
                                     </div>
                                 </div>
 
@@ -1040,9 +1040,9 @@ function Settings({ health, onUnsavedChanges }: SettingsProps) {
                                     <span style={{ color: '#aaa' }}>{t('settings.about.repository')}:</span>
                                     <a href="#" onClick={(e) => {
                                         e.preventDefault();
-                                        window.open('https://github.com/Ren9618/LocalV-StreamLive', '_blank');
+                                        window.open('https://github.com/Ren9618/LocalV-Suite', '_blank');
                                     }} style={{ color: '#4CAF50', textDecoration: 'none' }}>
-                                        https://github.com/Ren9618/LocalV-StreamLive
+                                        https://github.com/Ren9618/LocalV-Suite
                                     </a>
                                 </div>
 

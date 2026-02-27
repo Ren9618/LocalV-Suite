@@ -160,12 +160,12 @@ export async function stopVoiceger(baseUrl: string = 'http://127.0.0.1:8000'): P
 /**
  * Voicegerがインストールされているか（ディレクトリが存在するか）確認
  * install_voiceger.sh が /home/.../デスクトップ/LocalAI/ にクローンするため、
- * プロジェクトルート(LocalV-StreamLive)の親ディレクトリ(LocalAI)内を確認する
+ * プロジェクトルート(LocalV-Suite)の親ディレクトリ(LocalAI)内を確認する
  */
 export function isVoicegerInstalled(): boolean {
     const projectRoot = path.resolve(getScriptDir(), '..');
 
-    // Windows は LocalV-StreamLive ディレクトリ内、Mac は 1つ上の階層にインストールされる
+    // Windows は LocalV-Suite ディレクトリ内、Mac は 1つ上の階層にインストールされる
     const isWindows = process.platform === 'win32';
     const installDir = isWindows
         ? path.join(projectRoot, 'voiceger_v2')

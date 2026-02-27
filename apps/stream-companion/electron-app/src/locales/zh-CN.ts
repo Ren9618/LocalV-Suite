@@ -186,7 +186,7 @@ const zhCN: Record<string, string> = {
   'settings.about.author': '开发者',
   'settings.about.license': '许可证',
   'settings.about.repository': 'GitHub 仓库',
-  'settings.about.copyright': '© 2024-2026 LocalV-StreamLive Contributors. All rights reserved.',
+  'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',
   'filter.loading': '正在加载过滤器设置...',
   'filter.save': '💾 保存过滤器设置',
   'filter.saving': '保存中...',
