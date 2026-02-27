@@ -3,7 +3,7 @@
 🌍 Read this in other languages: [日本語](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [한국어](README.ko.md)
 
 LocalV-StreamLive is a privacy-focused, entirely offline AI broadcast bot and assistant tool suite designed to run entirely on your PC.
-Currently, it features **"Stream Companion"**, an AI mascot that humorously and sharply interacts with YouTube Live stream comments.
+Currently, it features **"Stream Companion"**, an AI mascot that automatically responds to and converses with YouTube Live stream comments.
 
 ## ✨ Features
 
@@ -37,14 +37,14 @@ Currently, it features **"Stream Companion"**, an AI mascot that humorously and 
 
 ## 💻 Tested Environments
 
-| Item | Environment 1 (Linux) | Environment 2 (Windows) |
-|---|---|---|
-| **OS** | Ubuntu 24.04 LTS (x86_64) | Windows 11 |
-| **CPU** | AMD Ryzen 7 5800X (16 threads) | AMD Ryzen 7 5800X (16 threads) |
-| **GPU** | NVIDIA GeForce RTX 2080 (8GB VRAM) | NVIDIA GeForce RTX 2080 (8GB VRAM) |
-| **RAM** | 48GB | 48GB |
-| **Node.js** | v25.x | v20.x or higher |
-| **Python** | 3.10–3.14 (for Voiceger) | 3.10 (for Voiceger) |
+| Item | Environment 1 (Linux) | Environment 2 (Windows) | Environment 3 (Mac) |
+|---|---|---|---|
+| **OS** | Ubuntu 24.04 LTS (x86_64) | Windows 11 | macOS Tahoe 26.3 |
+| **CPU** | AMD Ryzen 7 5800X (16 threads) | AMD Ryzen 7 5800X (16 threads) | Apple M1 |
+| **GPU** | NVIDIA GeForce RTX 2080 (8GB VRAM) | NVIDIA GeForce RTX 2080 (8GB VRAM) | Apple M1 (8-core GPU) |
+| **RAM** | 48GB | 48GB | 16GB |
+| **Node.js** | v25.x | v20.x or higher | v20.x |
+| **Python** | 3.10–3.14 (for Voiceger) | 3.10 (for Voiceger) | 3.9.7 |
 
 > [!NOTE]
 > - **GPU (NVIDIA)**: A CUDA-capable NVIDIA GPU with 8GB+ VRAM is strongly recommended when using Voiceger. VoiceVox alone can run on CPU.
@@ -81,6 +81,25 @@ npm run dev
 1. Click "🔗 Copy URL for OBS" at the bottom right of the app and use the copied URL (`http://localhost:25252/`).
 2. Add a "Browser Source" in OBS and paste the URL.
 3. Open "OBS Overlay Settings" from the app's "Settings" tab to visually customize font size, colors, background, and animation effects while previewing them.
+
+## 🚀 Roadmap / Future Features
+
+Currently, we are planning and considering the following new features to make your streams even more engaging:
+
+* **Enhancing Stream Visuals & Effects**
+  * **Avatar Integration**: Synchronize AI emotions with VTuber avatars or Live2D models (e.g., VTube Studio) for automatic facial expression and motion switching.
+  * **Sound Effects (SE)**: Automatically play sound effects tailored to the AI's responses or specific keywords.
+  * **OBS Automation**: Streamline broadcasting operations, such as AI-driven scene switching via OBS WebSocket API.
+
+* **Interactive & Viewer Engagement Features**
+  * **Multi-Platform Support**: Process comments from Twitch and other platforms simultaneously alongside YouTube.
+  * **AI-Led Activities**: Allow the AI to automatically initiate polls or mini-games during quiet moments in the stream.
+  * **SuperChat Special Effects**: Introduce custom voice tones or special dialogue based on donation amounts.
+
+* **Expanding Intelligent Capabilities**
+  * **Speech-to-Text (STT) Integration**: Recognize the streamer's microphone audio, allowing direct, collaborative voice conversations with the AI.
+  * **RAG (Retrieval-Augmented Generation)**: Feed the AI local text or Wiki data so it can provide more accurate, specialized, and context-aware responses.
+  * **Automated Highlights**: Generate a text summary of the stream's best moments and interactions when the broadcast ends.
 
 ## 📜 License
 This project is licensed under the [MIT License](LICENSE).
