@@ -184,6 +184,7 @@ const zhTW: Record<string, string> = {
   'settings.about.title': 'ℹ️ 關於本應用程式',
   'settings.about.version': '版本',
   'settings.about.author': '開發者',
+  'settings.about.contact': '聯絡方式',
   'settings.about.license': '授權條款',
   'settings.about.repository': 'GitHub 儲存庫',
   'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',

@@ -215,6 +215,7 @@ const en: Record<string, string> = {
   'settings.about.title': 'ℹ️ About',
   'settings.about.version': 'Version',
   'settings.about.author': 'Author',
+  'settings.about.contact': 'Contact',
   'settings.about.license': 'License',
   'settings.about.repository': 'GitHub Repository',
   'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',

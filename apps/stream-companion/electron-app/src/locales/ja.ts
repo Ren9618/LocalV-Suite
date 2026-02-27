@@ -215,9 +215,10 @@ const ja: Record<string, string> = {
   'settings.about.title': 'ℹ️ このアプリについて',
   'settings.about.version': 'バージョン',
   'settings.about.author': '開発者',
+  'settings.about.contact': 'お問い合わせ',
   'settings.about.license': 'ライセンス',
   'settings.about.repository': 'GitHub リポジトリ',
-  'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',
+  'settings.about.copyright': '© 2026 LocalV-Suite Contributors. All rights reserved.',
 
   // === フィルター ===
   'filter.loading': 'フィルター設定を読み込み中...',

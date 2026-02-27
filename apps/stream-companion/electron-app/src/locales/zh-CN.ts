@@ -184,6 +184,7 @@ const zhCN: Record<string, string> = {
   'settings.about.title': 'ℹ️ 关于本应用',
   'settings.about.version': '版本',
   'settings.about.author': '开发者',
+  'settings.about.contact': '联系方式',
   'settings.about.license': '许可证',
   'settings.about.repository': 'GitHub 仓库',
   'settings.about.copyright': '© 2024-2026 LocalV-Suite Contributors. All rights reserved.',
