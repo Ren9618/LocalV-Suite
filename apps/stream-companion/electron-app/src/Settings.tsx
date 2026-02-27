@@ -1018,7 +1018,7 @@ function Settings({ health, onUnsavedChanges }: SettingsProps) {
                             <div className="settings-field" style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '16px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{ fontSize: '48px' }}>🚀</div>
+                                    <img src="/icon.png" alt="App Icon" style={{ width: '48px', height: '48px', objectFit: 'contain', borderRadius: '8px' }} />
                                     <div>
                                         <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Local-V Stream Companion</h3>
                                         <p style={{ margin: '4px 0 0 0', color: '#aaa', fontSize: '0.9rem' }}>LocalV-Suite Project</p>

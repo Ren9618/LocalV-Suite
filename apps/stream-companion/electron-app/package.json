@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "com.localv.streamlive",
-    "productName": "LocalV-Suite",
+    "productName": "Local-V Stream Companion",
     "directories": {
       "output": "release"
     },
