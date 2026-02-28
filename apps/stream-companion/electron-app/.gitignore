@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.npm-cache
+.npm_cache
+.electron-cache
+release
